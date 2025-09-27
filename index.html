@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Cek Nilai Sumatif</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: #f8f9fa;
+      }
+      .card {
+        border-radius: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <div class="card shadow-lg rounded-4">
+            <div class="card-body p-4">
+              <h3 class="text-center mb-4">Cek Nilai Sumatif</h3>
+
+              <form id="nilaiForm">
+                <div class="mb-3">
+                  <label for="nama" class="form-label">Nama</label>
+                  <input type="text" id="nama" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                  <label for="kelas" class="form-label">Kelas</label>
+                  <select id="kelas" class="form-select" required>
+                    <option value="">-- Pilih Kelas --</option>
+                    <option value="X AKL 1">X AKL 1</option>
+                    <option value="X AKL 2">X AKL 2</option>
+                    <option value="X AKL 3">X AKL 3</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                  Cek Nilai
+                </button>
+              </form>
+
+              <div id="hasil" class="mt-4 d-none">
+                <h5 class="text-center">
+                  Hai, <span id="namaSiswa"></span> dari kelas
+                  <span id="kelasSiswa"></span>
+                </h5>
+                <p class="text-center fs-4 fw-bold">
+                  Nilai: <span id="nilai"></span>
+                </p>
+                <div class="alert text-center" id="pesan"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ===============================
+      // Data siswa + nilai
+      // ===============================
+      const dataSiswa = [
+        // X AKL 3
+        { nama: "Aileen Jesse Prasetyo", kelas: "X AKL 3", nilai: 92 },
+        { nama: "Amelia Putri Rahmadani", kelas: "X AKL 3", nilai: 92 },
+        { nama: "Clarita Sofie Christiawan", kelas: "X AKL 3", nilai: 80 },
+        { nama: "Delsieva Alvierra Yulianto", kelas: "X AKL 3", nilai: 100 },
+        { nama: "Fabyan Shallom Saputra", kelas: "X AKL 3", nilai: 58 },
+        { nama: "Faried Dwi Saputro", kelas: "X AKL 3", nilai: 86 },
+        { nama: "Fransiska Adenia", kelas: "X AKL 3", nilai: 75 },
+        { nama: "Frederica Grace Marvella H", kelas: "X AKL 3", nilai: 93 },
+        { nama: "Gisella Gita Angrahani", kelas: "X AKL 3", nilai: 0 }, // kosong di tabel? isi manual
+        { nama: "Jacqlien Alexandra", kelas: "X AKL 3", nilai: 88 },
+        {
+          nama: "Joanito Jonatan Dian Putro Wibowo",
+          kelas: "X AKL 3",
+          nilai: 67,
+        },
+        { nama: "Josephine Adeline Prasetyo", kelas: "X AKL 3", nilai: 76 },
+        {
+          nama: "Jovanna Vianney Sectio Soegianto",
+          kelas: "X AKL 3",
+          nilai: 80,
+        },
+        { nama: "Livia Feodora Chrisna Putri", kelas: "X AKL 3", nilai: 95 },
+        { nama: "Muhammad Krisna Setiawan", kelas: "X AKL 3", nilai: 87 },
+        { nama: "Nathanael Christian Setiono", kelas: "X AKL 3", nilai: 61 },
+        { nama: "Norbert Nathanael Atisatya", kelas: "X AKL 3", nilai: 95 },
+        { nama: "Olivia Feodora Chrisna Putri", kelas: "X AKL 3", nilai: 76 },
+        { nama: "Rahel Kristiana Darajati", kelas: "X AKL 3", nilai: 98 },
+        { nama: "Rivaldo Tri Pamungkas", kelas: "X AKL 3", nilai: 83 },
+        { nama: "Shannon Suryono", kelas: "X AKL 3", nilai: 85 },
+        { nama: "Tamira Putri Sabila", kelas: "X AKL 3", nilai: 0 }, // kosong
+        { nama: "Tegar Maulana", kelas: "X AKL 3", nilai: 83 },
+        { nama: "Veronica Maharani", kelas: "X AKL 3", nilai: 37 },
+        { nama: "Vicky Adi Saut", kelas: "X AKL 3", nilai: 91 },
+        {
+          nama: "Yemima Aira Ardhianni Kusuma Prayoga",
+          kelas: "X AKL 3",
+          nilai: 90,
+        },
+        { nama: "Linus Hanau", kelas: "X AKL 3", nilai: 60 },
+        { nama: "Thepanus Kemong", kelas: "X AKL 3", nilai: 10 },
+
+        // X AKL 1
+        { nama: "Alvinsa Marvilia Anggraini", kelas: "X AKL 1", nilai: 83 },
+        { nama: "Andreas Dimas Setiawan", kelas: "X AKL 1", nilai: 72 },
+        { nama: "Aurellia Annora Nalawati", kelas: "X AKL 1", nilai: 88 },
+        { nama: "Avitama Kusuma Widiastuti", kelas: "X AKL 1", nilai: 85 },
+        { nama: "Avvento Randy Jordanio", kelas: "X AKL 1", nilai: 70 },
+        { nama: "Brigitta Liony Suprianto", kelas: "X AKL 1", nilai: 90 },
+        { nama: "Chandra Aditya", kelas: "X AKL 1", nilai: 79 },
+        { nama: "Christina Agnes Sutanto", kelas: "X AKL 1", nilai: 98 },
+        { nama: "Dian Dwi Putra Basuki", kelas: "X AKL 1", nilai: 54 },
+        { nama: "Dorothea Dean Kiasatia Putri", kelas: "X AKL 1", nilai: 95 },
+        { nama: "Edo Pratama", kelas: "X AKL 1", nilai: 78 },
+        { nama: "Eka Rahayu", kelas: "X AKL 1", nilai: 100 },
+        { nama: "Ezra Windi Gresia Br Silalahi", kelas: "X AKL 1", nilai: 85 },
+        { nama: "Farah Nuri Ashifa", kelas: "X AKL 1", nilai: 94 },
+        { nama: "Hizkia Putra Susanto", kelas: "X AKL 1", nilai: 77 },
+        { nama: "Iriene Thea Puspahaningtyas", kelas: "X AKL 1", nilai: 80 },
+        { nama: "Jody Pramudia", kelas: "X AKL 1", nilai: 30 },
+        { nama: "Jovanno Rivannuel Kristanto", kelas: "X AKL 1", nilai: 72 },
+        { nama: "Kurniawan Susilo", kelas: "X AKL 1", nilai: 71 },
+        { nama: "Lionel Dominggus Riupassa", kelas: "X AKL 1", nilai: 53 },
+        { nama: "Maria Maharani Kusumadewi", kelas: "X AKL 1", nilai: 52 },
+        { nama: "Marion Diwatau", kelas: "X AKL 1", nilai: 43 },
+        { nama: "Muhamad Anggara Aufa Nugroho", kelas: "X AKL 1", nilai: 34 },
+        { nama: "Nopi Wamuni", kelas: "X AKL 1", nilai: 26 },
+        { nama: "Oktaviano Haryono", kelas: "X AKL 1", nilai: 57 },
+        { nama: "Raden Roro Desmonda T.D", kelas: "X AKL 1", nilai: 46 },
+        { nama: "Rikarda Kamawijaya", kelas: "X AKL 1", nilai: 11 },
+        { nama: "Septian Aldi Saputra", kelas: "X AKL 1", nilai: 91 },
+        { nama: "Yohana Renata Sutanto", kelas: "X AKL 1", nilai: 100 },
+
+        // X AKL 2
+        { nama: "Airin Angel Riyanto", kelas: "X AKL 2", nilai: 95 },
+        { nama: "Alan Suto Wibowo", kelas: "X AKL 2", nilai: 91 },
+        { nama: "Ananda Reza Shaputra", kelas: "X AKL 2", nilai: 37 },
+        { nama: "Ashar Dania Putri", kelas: "X AKL 2", nilai: 85 },
+        { nama: "Bayu Arga Saputra", kelas: "X AKL 2", nilai: 48 },
+        { nama: "Christian Jericho", kelas: "X AKL 2", nilai: 65 },
+        { nama: "Diana Silvia Alvionita", kelas: "X AKL 2", nilai: 100 },
+        { nama: "Emiliana Mahere", kelas: "X AKL 2", nilai: 10 },
+        { nama: "Evelyn Angela Mahardika", kelas: "X AKL 2", nilai: 98 },
+        { nama: "Gabriella Bernice Amadea", kelas: "X AKL 2", nilai: 95 },
+        { nama: "Gita Baruna", kelas: "X AKL 2", nilai: 95 },
+        { nama: "Jonathan Kenneth Sumartoyo", kelas: "X AKL 2", nilai: 84 },
+        { nama: "Josephira Letshya Zefanya", kelas: "X AKL 2", nilai: 92 },
+        { nama: "Jovita Elva Hendarko", kelas: "X AKL 2", nilai: 96 },
+        { nama: "Kezia Fiona Amelia", kelas: "X AKL 2", nilai: 77 },
+        { nama: "Lorenzo Odisius Magal", kelas: "X AKL 2", nilai: 48 },
+        { nama: "Maria Margaretha Ayudia S.", kelas: "X AKL 2", nilai: 73 },
+        { nama: "Maria Stella Arminta Gani", kelas: "X AKL 2", nilai: 64 },
+        { nama: "Milka Putri Kristiani", kelas: "X AKL 2", nilai: 70 },
+        { nama: "Novoulla Cahyannig Putri", kelas: "X AKL 2", nilai: 88 },
+        { nama: "Oliv Silvia Wanda Putri", kelas: "X AKL 2", nilai: 98 },
+        { nama: "Qarin Saltazaria", kelas: "X AKL 2", nilai: 83 },
+        { nama: "Rama Nur Andika", kelas: "X AKL 2", nilai: 46 },
+        { nama: "Rasya Ayu Lestari", kelas: "X AKL 2", nilai: 96 },
+        { nama: "Shalisa Nathalie Halim", kelas: "X AKL 2", nilai: 81 },
+        { nama: "Stefanus Nietho Wirajaya Putra", kelas: "X AKL 2", nilai: 40 },
+        { nama: "Vebyana Diah Ayu Anggraini", kelas: "X AKL 2", nilai: 90 },
+        { nama: "Violita Aurelia Salsabila", kelas: "X AKL 2", nilai: 84 },
+        { nama: "Wilshen Marcellino Mulyono", kelas: "X AKL 2", nilai: 58 },
+        { nama: "Window Widi Williano", kelas: "X AKL 2", nilai: 54 },
+      ];
+
+      // ===============================
+      // Logika
+      // ===============================
+      document
+        .getElementById("nilaiForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const nama = document
+            .getElementById("nama")
+            .value.trim()
+            .toLowerCase();
+          const kelas = document
+            .getElementById("kelas")
+            .value.trim()
+            .toLowerCase();
+
+          const siswa = dataSiswa.find(
+            (s) =>
+              s.nama.toLowerCase() === nama && s.kelas.toLowerCase() === kelas
+          );
+
+          if (siswa) {
+            tampilkanHasil(siswa.nama, siswa.kelas, siswa.nilai);
+          } else {
+            alert("Data tidak ditemukan. Pastikan nama & kelas sesuai.");
+          }
+        });
+
+      function tampilkanHasil(nama, kelas, nilai) {
+        document.getElementById("hasil").classList.remove("d-none");
+        document.getElementById("namaSiswa").innerText = nama;
+        document.getElementById("kelasSiswa").innerText = kelas;
+        document.getElementById("nilai").innerText = nilai;
+
+        const pesanEl = document.getElementById("pesan");
+        if (nilai <= 30) {
+          pesanEl.className = "alert alert-danger";
+          pesanEl.innerText = "Jangan putus asa, tetap semangat! 🌱";
+        } else if (nilai <= 50) {
+          pesanEl.className = "alert alert-warning";
+          pesanEl.innerText =
+            "Belajar lebih tekun ya, masih bisa diperbaiki 📚";
+        } else if (nilai <= 70) {
+          pesanEl.className = "alert alert-info";
+          pesanEl.innerText = "Sedikit lagi menuju KKM, ayo gas terus 💪";
+        } else {
+          pesanEl.className = "alert alert-success";
+          pesanEl.innerText = "Keren gokil! Pertahankan prestasimu 🎉";
+        }
+      }
+    </script>
+  </body>
+</html>
